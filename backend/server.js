@@ -138,13 +138,11 @@ app.post('/api/users', async (req, res) => {
     experiences.forEach((exp, index) => {
       currentYOffset = checkAndAddPage(doc, currentYOffset); 
       doc.setFont('helvetica', 'bold');
-      doc.text(`Role: ${exp.role}, Company: ${exp.company}`, 20, currentYOffset);
+      doc.text(`Role: ${exp.role}`,  20, currentYOffset)
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Company: ${exp.company} (${exp.startdate}-${exp.enddate})`,  20, currentYOffset+7)
       doc.setFont('helvetica', 'normal');
-      doc.text(`Description: ${exp.description}`, 20, currentYOffset + 7, { maxWidth: 170 });
-      doc.setFont('helvetica', 'normal');
-      doc.text(`Joining Date: ${exp.startdate}`, 20, currentYOffset + 14, { maxWidth: 170 });
-      doc.setFont('helvetica', 'normal');
-      doc.text(`Ending Date: ${exp.enddate}`, 20, currentYOffset + 21, { maxWidth: 170 });
+      doc.text(`Description: ${exp.description}`, 20, currentYOffset + 14, { maxWidth: 170 });
       currentYOffset += 25;
     });
 

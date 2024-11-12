@@ -30,6 +30,7 @@ function Signup() {
                 autoClose: 3000,
                 theme: "light",
               });
+           
         }
         else{
             toast.error(`Error: ${result.message}`, {
