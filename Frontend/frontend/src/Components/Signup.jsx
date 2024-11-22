@@ -1,49 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 function Signup() {
+  const navigate=useNavigate()
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit = async(data) => {
-    console.log('Signup submitted:', data);
-    const userInfo={
-        name: data.name,
-        email:data.email,
-        password:data.password
-    }
+  const onSubmit = async (data) => {
+    const userInfo = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    };
+
+    setIsLoading(true); 
 
     try {
-        const res=await fetch("http://localhost:5001/user/signup",{
-            method:"POST",
-            headers:{
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(userInfo),
-        })
+      const res = await fetch("http://localhost:5001/user/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userInfo),
+      });
 
-        const result=await res.json()
+      const result = await res.json();
 
-        if(res.ok){
-            toast.success("Signup Successful!", {
-                position: "top-center",
-                autoClose: 3000,
-                theme: "light",
-              });
-           
-        }
-        else{
-            toast.error(`Error: ${result.message}`, {
-                position: "top-center",
-                autoClose: 5000,
-                theme: "light",
-              });
-        }
-
+      if (res.ok) {
+        toast.success("Signup Successful!", {
+          position: "top-center",
+          autoClose: 3000,
+          theme: "light",
+        });
+        navigate('/')
+      } else {
+        toast.error(`Error: ${result.message}`, {
+          position: "top-center",
+          autoClose: 5000,
+          theme: "light",
+        });
+      }
     } catch (error) {
-        console.log("Error :",error)
+      toast.error("Network error. Please try again later.", {
+        position: "top-center",
+        autoClose: 5000,
+        theme: "light",
+      });
+      console.log("Error:", error);
+    } finally {
+      setIsLoading(false); // Reset loading state
     }
-
   };
 
   return (
@@ -60,14 +68,18 @@ function Signup() {
           />
           {errors.name && <span style={styles.error}>{errors.name.message}</span>}
         </div>
-        
+
         <div style={styles.formGroup}>
           <label htmlFor="email">Email:</label>
           <input
             type="email"
             id="email"
-            {...register('email', { 
-              required: 'Email is required', 
+            {...register('email', {
+              required: 'Email is required',
+              pattern: {
+                value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                message: 'Enter a valid email',
+              },
             })}
             style={styles.input}
           />
@@ -79,13 +91,21 @@ function Signup() {
           <input
             type="password"
             id="password"
-            {...register('password', { required: 'Password is required' })}
+            {...register('password', {
+              required: 'Password is required',
+              minLength: {
+                value: 6,
+                message: 'Password must be at least 6 characters long',
+              },
+            })}
             style={styles.input}
           />
           {errors.password && <span style={styles.error}>{errors.password.message}</span>}
         </div>
-        
-        <button type="submit" style={styles.button}>Signup</button>
+
+        <button type="submit" style={styles.button} disabled={isLoading}>
+          {isLoading ? 'Signing up...' : 'Signup'}
+        </button>
       </form>
     </div>
   );
@@ -131,7 +151,7 @@ const styles = {
     color: 'red',
     fontSize: '12px',
     marginTop: '5px',
-  }
+  },
 };
 
 export default Signup;

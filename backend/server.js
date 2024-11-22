@@ -1,4 +1,5 @@
 const express = require('express');
+const path=require('path')
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { jsPDF } = require('jspdf');
@@ -13,6 +14,14 @@ const PORT = 5001;
 app.use(bodyParser.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+const buildPath = path.join(__dirname, '../Frontend/frontend/build');
+app.use(express.static(buildPath));
+
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(buildPath, 'index.html'));
+});
 
 
 mongoose.connect('mongodb://localhost:27017/smartcv', { useNewUrlParser: true, useUnifiedTopology: true })

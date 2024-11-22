@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { json, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
@@ -7,6 +7,10 @@ import 'react-toastify/dist/ReactToastify.css';
 function Login({ closeModal }) { 
   const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    toast.dismiss()
+  },[])
 
   const onSubmit = async (data) => {
     console.log('Login submitted:', data);
@@ -57,7 +61,7 @@ function Login({ closeModal }) {
 
   return (
     <>
-      <ToastContainer />
+     
       <div style={styles.container}>
         <h2>Login</h2>
         <form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
